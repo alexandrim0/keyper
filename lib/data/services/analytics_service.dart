@@ -1,34 +1,30 @@
 import 'package:amplitude_flutter/amplitude.dart';
+import 'package:amplitude_flutter/configuration.dart';
+import 'package:amplitude_flutter/events/base_event.dart';
 
 import 'package:guardian_keyper/consts.dart';
 
-typedef EventLogger = Future<void> Function(
-  String eventType, {
-  Map<String, dynamic>? eventProperties,
-  bool? outOfSession,
-});
-
 class AnalyticsService {
   static Future<AnalyticsService> init() async {
-    final amplitude = Amplitude.getInstance();
-    if (amplitudeKey.isEmpty) return const AnalyticsService();
-    await amplitude.init(amplitudeKey);
-    await amplitude.trackingSessionEvents(true);
-    // Enable COPPA privacy guard.
-    // This is useful when you choose not to report sensitive user information.
-    await amplitude.enableCoppaControl();
-    return AnalyticsService(logEvent: amplitude.logEvent);
+    if (amplitudeKey.isEmpty) {
+      return AnalyticsService(
+        logEvent: (_) => Future.value(),
+      );
+    }
+    final amplitude = Amplitude(Configuration(
+      apiKey: amplitudeKey,
+      enableCoppaControl: true,
+    ));
+    return AnalyticsService(
+      logEvent: (e) => amplitude.track(BaseEvent(e)),
+    );
   }
 
-  static Future<void> _logEvent(
-    String eventType, {
-    Map<String, dynamic>? eventProperties,
-    bool? outOfSession,
-  }) async {}
+  const AnalyticsService({
+    required this.logEvent,
+  });
 
-  final EventLogger logEvent;
-
-  const AnalyticsService({this.logEvent = _logEvent});
+  final Future<void> Function(String event) logEvent;
 
   Future<void> logStartCreateVault() => logEvent('Start CreateVault');
   Future<void> logFinishCreateVault() => logEvent('Finish CreateVault');

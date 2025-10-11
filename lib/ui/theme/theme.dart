@@ -42,6 +42,7 @@ final themeData = ThemeData(
     elevation: 0,
     toolbarHeight: kToolbarHeight,
   ),
+
   // Bottom Sheet
   bottomSheetTheme: const BottomSheetThemeData(
     shape: RoundedRectangleBorder(
@@ -49,18 +50,21 @@ final themeData = ThemeData(
     ),
     showDragHandle: true,
   ),
+
   // Card
-  cardTheme: CardTheme(
+  cardTheme: CardThemeData(
     elevation: 0,
     margin: EdgeInsets.zero,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(kCornerRadius),
     ),
   ),
+
   // Divider
   dividerTheme: const DividerThemeData(
     thickness: 2,
   ),
+
   // Expansion Panel
   expansionTileTheme: ExpansionTileThemeData(
     childrenPadding: const EdgeInsets.all(20),
@@ -75,6 +79,7 @@ final themeData = ThemeData(
       horizontal: kDefaultTilePadding,
     ),
   ),
+
   // Filled Button
   filledButtonTheme: FilledButtonThemeData(
     style: ButtonStyle(
@@ -85,8 +90,10 @@ final themeData = ThemeData(
       textStyle: WidgetStatePropertyAll(textTheme.titleMedium),
     ),
   ),
+
   // Font family
   fontFamily: GoogleFonts.sourceSans3().fontFamily,
+
   // Input
   inputDecorationTheme: InputDecorationTheme(
     border: OutlineInputBorder(
@@ -98,6 +105,7 @@ final themeData = ThemeData(
     helperStyle: textTheme.bodySmall,
     helperMaxLines: 1,
   ),
+
   // ListTile
   listTileTheme: ListTileThemeData(
     titleTextStyle: textTheme.bodyMedium?.copyWith(
@@ -113,6 +121,7 @@ final themeData = ThemeData(
       horizontal: kDefaultTilePadding,
     ),
   ),
+
   // Outlined Button
   outlinedButtonTheme: OutlinedButtonThemeData(
       style: ButtonStyle(
@@ -126,11 +135,13 @@ final themeData = ThemeData(
     TargetPlatform.android: CupertinoPageTransitionsBuilder(),
     TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
   }),
+
   // SnackBar
   snackBarTheme: const SnackBarThemeData(
     behavior: SnackBarBehavior.floating,
     showCloseIcon: true,
   ),
+
   // Text
   textTheme: textTheme,
 );
