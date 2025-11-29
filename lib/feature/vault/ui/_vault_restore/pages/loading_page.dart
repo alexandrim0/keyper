@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:guardian_keyper/app/routes.dart';
 import 'package:guardian_keyper/ui/widgets/common.dart';
 
@@ -17,93 +19,97 @@ class _LoadingPageState extends State<LoadingPage> {
   @override
   void initState() {
     super.initState();
-    context.read<VaultRestorePresenter>().startRequest().then(
-      (message) async {
-        if (!mounted) return;
-        if (message.isAccepted) {
-          final wantAddAnother = await OnSuccessDialog.show(
-            context,
-            peerName: message.peerId.name,
-            vaultName: message.vault.id.name,
-            isFull: message.vault.isFull,
-          );
-          if (mounted) {
-            return wantAddAnother ?? false
-                ? Navigator.of(context).pushReplacementNamed(
-                    routeVaultRestore,
-                    arguments: message.vaultId,
-                  )
-                : Navigator.of(context).pop();
-          }
-        } else if (message.isRejected) {
-          await OnRejectDialog.show(
-            context,
-            peerId: message.peerId.name,
-          );
-        } else {
-          await OnFailDialog.show(context);
-        }
-        if (mounted) Navigator.of(context).pop();
-      },
-    );
+    unawaited(_init());
   }
 
   @override
   Widget build(BuildContext context) => ScaffoldSafe(
-        appBar: AppBar(
-          title: const Text('Restoring your Safe'),
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+    appBar: AppBar(
+      title: const Text('Restoring your Safe'),
+      centerTitle: true,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+    ),
+    child: Column(
+      crossAxisAlignment: .stretch,
+      children: [
+        // Body
+        Padding(
+          padding: paddingAllDefault + paddingT12,
+          child: Card(
+            child: Column(
+              children: [
+                Padding(
+                  padding: paddingTDefault,
+                  child: Selector<VaultRestorePresenter, bool>(
+                    selector: (_, presenter) => presenter.isWaiting,
+                    builder: (_, isWaiting, _) => Visibility(
+                      visible: isWaiting,
+                      child: const CircularProgressIndicator.adaptive(),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: paddingAllDefault,
+                  child: RichText(
+                    text: TextSpan(
+                      children: [
+                        const TextSpan(text: 'Awaiting '),
+                        TextSpan(
+                          text: context
+                              .read<VaultRestorePresenter>()
+                              .qrCode!
+                              .peerId
+                              .name,
+                          style: styleW600,
+                        ),
+                        const TextSpan(text: '’s response'),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Body
-            const Padding(padding: paddingT12),
-            Padding(
-              padding: paddingAllDefault,
-              child: Card(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: paddingTDefault,
-                      child: Selector<VaultRestorePresenter, bool>(
-                        selector: (_, presenter) => presenter.isWaiting,
-                        builder: (_, isWaiting, __) => Visibility(
-                          visible: isWaiting,
-                          child: const CircularProgressIndicator.adaptive(),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: paddingAllDefault,
-                      child: RichText(
-                        text: TextSpan(
-                          children: [
-                            const TextSpan(text: 'Awaiting '),
-                            TextSpan(
-                              text: context
-                                  .read<VaultRestorePresenter>()
-                                  .qrCode!
-                                  .peerId
-                                  .name,
-                              style: styleW600,
-                            ),
-                            const TextSpan(text: '’s response'),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+      ],
+    ),
+  );
+
+  Future<void> _init() =>
+      context.read<VaultRestorePresenter>().startRequest().then(
+        (message) async {
+          if (!mounted) return;
+          if (message.isAccepted) {
+            final wantAddAnother = await OnSuccessDialog.show(
+              context,
+              peerName: message.peerId.name,
+              vaultName: message.vault.id.name,
+              isFull: message.vault.isFull,
+            );
+            if (mounted) {
+              return wantAddAnother ?? false
+                  ? Navigator.of(context).pushReplacementNamed(
+                      routeVaultRestore,
+                      arguments: message.vaultId,
+                    )
+                  : Navigator.of(context).pop();
+            }
+          } else if (message.isRejected) {
+            await OnRejectDialog.show(
+              context,
+              peerId: message.peerId.name,
+            );
+          } else {
+            await OnFailDialog.show(context);
+          }
+          if (mounted) {
+            Navigator.of(context).pop();
+          }
+        },
       );
 }

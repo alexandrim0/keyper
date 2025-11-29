@@ -20,35 +20,36 @@ class VaultsList extends StatelessWidget {
         return Padding(
           padding: paddingAllDefault,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: .stretch,
             children: [
               Expanded(
                 child: vaults.isEmpty
                     ? const Center(
                         child: PageTitle(
                           title: 'There will be your Safes',
-                          subtitle: 'A Safe is a secure place to store '
+                          subtitle:
+                              'A Safe is a secure place to store '
                               'your secrets, such as seed phrases or passwords.',
                         ),
                       )
                     : ListView.separated(
-                        separatorBuilder: (_, __) =>
-                            const Padding(padding: paddingT12),
                         itemCount: vaults.length,
                         itemBuilder: (context, index) => VaultListTile(
                           vault: vaults[index],
                           initiallyExpanded: index == 0,
                         ),
+                        separatorBuilder: (_, _) =>
+                            const Padding(padding: paddingT12),
                       ),
               ),
 
               //Buttons
               const Padding(padding: paddingTDefault),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: .spaceAround,
                 children: [
                   Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: .center,
                     children: [
                       IconButton(
                         icon: Icon(
@@ -63,11 +64,11 @@ class VaultsList extends StatelessWidget {
                       const Padding(
                         padding: paddingT12,
                         child: Text('New Safe'),
-                      )
+                      ),
                     ],
                   ),
                   Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: .center,
                     children: [
                       IconButton(
                         icon: Icon(
@@ -82,7 +83,7 @@ class VaultsList extends StatelessWidget {
                       const Padding(
                         padding: paddingT12,
                         child: Text('Restore a Safe'),
-                      )
+                      ),
                     ],
                   ),
                 ],

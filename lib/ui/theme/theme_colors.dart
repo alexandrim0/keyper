@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use //
+
 part of 'theme.dart';
 
 const colorSwatchIndigo = MaterialColor(
@@ -24,18 +26,18 @@ const brandColors = BrandColors(
 
 const systemStyleLight = SystemUiOverlayStyle(
   statusBarColor: Colors.transparent,
-  statusBarBrightness: Brightness.light,
-  statusBarIconBrightness: Brightness.dark,
+  statusBarBrightness: .light,
+  statusBarIconBrightness: .dark,
 );
 
 const systemStyleDark = SystemUiOverlayStyle(
   statusBarColor: Colors.transparent,
-  statusBarBrightness: Brightness.dark,
-  statusBarIconBrightness: Brightness.light,
+  statusBarBrightness: .dark,
+  statusBarIconBrightness: .light,
 );
 
 final colorSchemeLight = ColorScheme.fromSeed(
-  brightness: Brightness.light,
+  brightness: .light,
   seedColor: colorSwatchIndigo.shade600,
   primary: colorSwatchIndigo.shade600,
   onPrimary: colorSwatchIndigo.shade50,
@@ -50,16 +52,10 @@ final colorSchemeLight = ColorScheme.fromSeed(
   surfaceTint: Colors.white,
   onSurface: colorSwatchIndigo.shade800,
   onSurfaceVariant: colorSwatchIndigo.shade600,
-  //Not used yet
-  // primaryContainer: colorGuardianIndigo.shade600,
-  // onPrimaryContainer: colorGuardianIndigo.shade50,
-  // onTertiary: colorGuardianIndigo.shade50,
-  // errorContainer: const Color(0x22F6EAEA),
-  // onErrorContainer: const Color(0xFFD32C2C),
 );
 
 final colorSchemeDark = ColorScheme.fromSeed(
-  brightness: Brightness.dark,
+  brightness: .dark,
   seedColor: colorSwatchIndigo.shade600,
   primary: colorSwatchIndigo.shade600,
   onPrimary: colorSwatchIndigo.shade50,
@@ -75,19 +71,13 @@ final colorSchemeDark = ColorScheme.fromSeed(
   surfaceTint: colorSwatchIndigo.shade900,
   onSurface: colorSwatchIndigo.shade50,
   onSurfaceVariant: colorSwatchIndigo.shade100,
-  //Not used yet
-  // primaryContainer: colorGuardianIndigo.shade600,
-  // onPrimaryContainer: colorGuardianIndigo.shade50,
-  // OnTertiary:
-  // errorContainer: const Color(0x22F6EAEA),
-  // onErrorContainer: const Color(0xFFD32C2C),
 );
 
-final lightTheme = _createAppTheme(Brightness.light);
-final darkTheme = _createAppTheme(Brightness.dark);
+final lightTheme = _createAppTheme(.light);
+final darkTheme = _createAppTheme(.dark);
 
 ThemeData _createAppTheme(Brightness brightness) {
-  final isDarkMode = brightness == Brightness.dark;
+  final isDarkMode = brightness == .dark;
   final colorScheme = isDarkMode ? colorSchemeDark : colorSchemeLight;
 
   return themeData.copyWith(
@@ -99,14 +89,15 @@ ThemeData _createAppTheme(Brightness brightness) {
     unselectedWidgetColor: colorScheme.onSurface,
     // AppBar
     appBarTheme: themeData.appBarTheme.copyWith(
-        backgroundColor: colorScheme.surfaceTint,
-        surfaceTintColor: colorScheme.surfaceTint,
-        systemOverlayStyle: isDarkMode ? systemStyleDark : systemStyleLight,
-        titleTextStyle: textTheme.titleLarge!.copyWith(
-          color: colorScheme.onSurface,
-        ),
-        toolbarHeight: kToolbarHeight + 32,
-        iconTheme: IconThemeData(color: colorScheme.onSurface)),
+      backgroundColor: colorScheme.surfaceTint,
+      surfaceTintColor: colorScheme.surfaceTint,
+      systemOverlayStyle: isDarkMode ? systemStyleDark : systemStyleLight,
+      titleTextStyle: textTheme.titleLarge!.copyWith(
+        color: colorScheme.onSurface,
+      ),
+      toolbarHeight: kToolbarHeight + 32,
+      iconTheme: IconThemeData(color: colorScheme.onSurface),
+    ),
     // Card
     cardTheme: themeData.cardTheme.copyWith(
       color: colorScheme.surface,
@@ -141,7 +132,7 @@ ThemeData _createAppTheme(Brightness brightness) {
         ),
         shape: const WidgetStatePropertyAll(
           RoundedRectangleBorder(
-            borderRadius: BorderRadiusDirectional.all(Radius.circular(8)),
+            borderRadius: BorderRadiusDirectional.all(.circular(8)),
           ),
         ),
       ),
@@ -157,10 +148,10 @@ ThemeData _createAppTheme(Brightness brightness) {
           color: colorScheme.tertiary,
         ),
       ),
-      floatingLabelStyle:
-          themeData.inputDecorationTheme.floatingLabelStyle?.copyWith(
-        color: colorScheme.onSurface,
-      ),
+      floatingLabelStyle: themeData.inputDecorationTheme.floatingLabelStyle
+          ?.copyWith(
+            color: colorScheme.onSurface,
+          ),
       labelStyle: themeData.inputDecorationTheme.labelStyle?.copyWith(
         color: colorScheme.onSurface,
       ),
@@ -181,25 +172,26 @@ ThemeData _createAppTheme(Brightness brightness) {
     ),
     // Outlined Button
     outlinedButtonTheme: OutlinedButtonThemeData(
-        style: themeData.filledButtonTheme.style?.copyWith(
-      foregroundColor: WidgetStateProperty.resolveWith<Color>(
-        (states) => states.contains(WidgetState.disabled)
-            ? colorScheme.onSurface.withOpacity(0.5)
-            : colorScheme.onSurface,
-      ),
-      shape: const WidgetStatePropertyAll<RoundedRectangleBorder>(
-        RoundedRectangleBorder(
-          borderRadius: BorderRadiusDirectional.all(Radius.circular(8)),
+      style: themeData.filledButtonTheme.style?.copyWith(
+        foregroundColor: WidgetStateProperty.resolveWith<Color>(
+          (states) => states.contains(WidgetState.disabled)
+              ? colorScheme.onSurface.withOpacity(0.5)
+              : colorScheme.onSurface,
+        ),
+        shape: const WidgetStatePropertyAll<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadiusDirectional.all(.circular(8)),
+          ),
+        ),
+        side: WidgetStateProperty.resolveWith<BorderSide>(
+          (states) => BorderSide(
+            color: states.contains(WidgetState.disabled)
+                ? colorScheme.primary.withOpacity(0.5)
+                : colorScheme.primary,
+          ),
         ),
       ),
-      side: WidgetStateProperty.resolveWith<BorderSide>(
-        (states) => BorderSide(
-          color: states.contains(WidgetState.disabled)
-              ? colorScheme.primary.withOpacity(0.5)
-              : colorScheme.primary,
-        ),
-      ),
-    )),
+    ),
     // SnackBar
     snackBarTheme: themeData.snackBarTheme.copyWith(
       backgroundColor: brandColors.highlightColor,
@@ -210,10 +202,11 @@ ThemeData _createAppTheme(Brightness brightness) {
     // Switch
     switchTheme: SwitchThemeData(
       thumbColor: WidgetStatePropertyAll(colorScheme.onPrimary),
-      trackColor: WidgetStateProperty.resolveWith<Color>((states) =>
-          states.contains(WidgetState.selected)
-              ? colorScheme.tertiary
-              : colorScheme.secondary),
+      trackColor: WidgetStateProperty.resolveWith<Color>(
+        (states) => states.contains(WidgetState.selected)
+            ? colorScheme.tertiary
+            : colorScheme.secondary,
+      ),
       trackOutlineColor: WidgetStatePropertyAll(colorScheme.secondary),
       trackOutlineWidth: const WidgetStatePropertyAll(0),
     ),
@@ -272,7 +265,6 @@ ThemeData _createAppTheme(Brightness brightness) {
       ),
     ),
 
-    // ignore: deprecated_member_use
     useMaterial3: false,
   );
 }

@@ -14,7 +14,7 @@ const paddingT12 = EdgeInsets.only(top: 12);
 const paddingB12 = EdgeInsets.only(bottom: 12);
 const paddingV4 = EdgeInsets.symmetric(vertical: 4);
 
-const styleW600 = TextStyle(fontWeight: FontWeight.w600);
+const styleW600 = TextStyle(fontWeight: .w600);
 
 class ScaffoldSafe extends StatelessWidget {
   const ScaffoldSafe({
@@ -26,7 +26,7 @@ class ScaffoldSafe extends StatelessWidget {
     this.bottomNavigationBar,
     this.isSeparated = false,
     this.isSeparatorSmall = false,
-    this.minimumPadding = EdgeInsets.zero,
+    this.minimumPadding = .zero,
     super.key,
   });
 
@@ -42,34 +42,35 @@ class ScaffoldSafe extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ColoredBox(
-        color: Theme.of(context).colorScheme.surfaceTint,
-        child: SafeArea(
-          minimum: minimumPadding,
-          child: Scaffold(
-            appBar: appBar,
-            body: child ??
-                (children == null
-                    ? null
-                    : (isSeparated
-                        ? ListView.separated(
-                            padding: paddingAllDefault,
-                            itemCount: children!.length,
-                            itemBuilder: (_, i) => children![i],
-                            separatorBuilder: (_, __) => isSeparatorSmall
-                                ? const Padding(padding: paddingT12)
-                                : const Padding(padding: paddingTDefault),
-                          )
-                        : ListView(
-                            padding: paddingAllDefault,
-                            children: children!,
-                          ))),
-            bottomNavigationBar: bottomNavigationBar,
-            resizeToAvoidBottomInset: true,
-            primary: true,
-            drawer: drawer,
-          ),
-        ),
-      );
+    color: Theme.of(context).colorScheme.surfaceTint,
+    child: SafeArea(
+      minimum: minimumPadding,
+      child: Scaffold(
+        appBar: appBar,
+        body:
+            child ??
+            (children == null
+                ? null
+                : (isSeparated
+                      ? ListView.separated(
+                          padding: paddingAllDefault,
+                          itemCount: children!.length,
+                          itemBuilder: (_, i) => children![i],
+                          separatorBuilder: (_, _) => isSeparatorSmall
+                              ? const Padding(padding: paddingT12)
+                              : const Padding(padding: paddingTDefault),
+                        )
+                      : ListView(
+                          padding: paddingAllDefault,
+                          children: children!,
+                        ))),
+        bottomNavigationBar: bottomNavigationBar,
+        resizeToAvoidBottomInset: true,
+        primary: true,
+        drawer: drawer,
+      ),
+    ),
+  );
 }
 
 class PageTitle extends StatelessWidget {
@@ -91,8 +92,8 @@ class PageTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final paddingTop = switch (ScreenSize(context)) {
-      ScreenSmall _ => paddingT12,
-      ScreenMedium _ => paddingTDefault,
+      ScreenSmall() => paddingT12,
+      ScreenMedium() => paddingTDefault,
       _ => const EdgeInsets.only(top: 32),
     };
     final theme = Theme.of(context);
@@ -100,7 +101,7 @@ class PageTitle extends StatelessWidget {
     return Padding(
       padding: paddingHDefault,
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           // Icon
           if (icon != null)
@@ -113,10 +114,12 @@ class PageTitle extends StatelessWidget {
             Padding(
               padding: paddingTop,
               child: RichText(
-                textAlign: TextAlign.center,
+                textAlign: .center,
                 text: TextSpan(
                   text: title,
-                  style: theme.textTheme.titleLarge!.copyWith(color: textColor),
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    color: textColor,
+                  ),
                 ),
               ),
             ),
@@ -125,14 +128,14 @@ class PageTitle extends StatelessWidget {
             Padding(
               padding: paddingTDefault,
               child: RichText(
-                textAlign: TextAlign.center,
+                textAlign: .center,
                 text: TextSpan(
                   text: subtitle,
                   children: subtitleSpans,
                   style: TextStyle(
                     height: 1.5,
                     fontSize: 16,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: .w400,
                     color: textColor,
                   ),
                 ),
@@ -169,8 +172,8 @@ class BottomSheetWidget extends StatelessWidget {
     return Padding(
       padding: paddingAllDefault,
       child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: .min,
+        crossAxisAlignment: .stretch,
         children: [
           // Icon
           if (icon != null)
@@ -185,7 +188,7 @@ class BottomSheetWidget extends StatelessWidget {
               child: Text(
                 titleString!,
                 style: textTheme.titleLarge,
-                textAlign: TextAlign.center,
+                textAlign: .center,
               ),
             ),
           // Text
@@ -193,7 +196,7 @@ class BottomSheetWidget extends StatelessWidget {
             Padding(
               padding: paddingB12,
               child: RichText(
-                textAlign: TextAlign.center,
+                textAlign: .center,
                 text: TextSpan(
                   style: textTheme.bodyMedium,
                   text: textString,
@@ -202,9 +205,17 @@ class BottomSheetWidget extends StatelessWidget {
               ),
             ),
           // Body
-          if (body != null) Padding(padding: paddingTDefault, child: body),
+          if (body != null)
+            Padding(
+              padding: paddingTDefault,
+              child: body,
+            ),
           // Footer
-          if (footer != null) Padding(padding: paddingTDefault, child: footer),
+          if (footer != null)
+            Padding(
+              padding: paddingTDefault,
+              child: footer,
+            ),
           const Padding(padding: paddingBDefault),
         ],
       ),
@@ -221,22 +232,25 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason> showSnackBar(
   bool isError = false,
 }) {
   final theme = Theme.of(context);
-  return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    duration: duration,
-    behavior: isFloating ? SnackBarBehavior.floating : null,
-    margin: paddingAllDefault,
-    backgroundColor:
-        isError ? theme.colorScheme.error : theme.snackBarTheme.backgroundColor,
-    content: RichText(
-      text: TextSpan(
-        text: text,
-        children: textSpans,
-        style: isError
-            ? theme.snackBarTheme.contentTextStyle!.copyWith(
-                color: theme.colorScheme.onError,
-              )
-            : theme.snackBarTheme.contentTextStyle,
+  return ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      duration: duration,
+      behavior: isFloating ? .floating : null,
+      margin: paddingAllDefault,
+      backgroundColor: isError
+          ? theme.colorScheme.error
+          : theme.snackBarTheme.backgroundColor,
+      content: RichText(
+        text: TextSpan(
+          text: text,
+          children: textSpans,
+          style: isError
+              ? theme.snackBarTheme.contentTextStyle!.copyWith(
+                  color: theme.colorScheme.onError,
+                )
+              : theme.snackBarTheme.contentTextStyle,
+        ),
       ),
     ),
-  ));
+  );
 }

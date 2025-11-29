@@ -13,12 +13,11 @@ class OnMessageActiveDialog extends StatefulWidget with MessageTextMixin {
   static Future<bool?> show(
     BuildContext context, {
     required MessageModel message,
-  }) =>
-      showModalBottomSheet<bool>(
-        context: context,
-        isScrollControlled: true,
-        builder: (_) => OnMessageActiveDialog(message: message),
-      );
+  }) => showModalBottomSheet<bool>(
+    context: context,
+    isScrollControlled: true,
+    builder: (_) => OnMessageActiveDialog(message: message),
+  );
 
   const OnMessageActiveDialog({
     required this.message,
@@ -43,8 +42,9 @@ class _OnMessageActiveDialogState extends State<OnMessageActiveDialog>
 
   late final Timer _timer;
 
-  late bool _isPeerOnline =
-      _messagesInteractor.getPeerStatus(widget.message.peerId);
+  late bool _isPeerOnline = _messagesInteractor.getPeerStatus(
+    widget.message.peerId,
+  );
 
   bool _isRequestError = false;
   bool _isRequestActive = false;
@@ -58,16 +58,16 @@ class _OnMessageActiveDialogState extends State<OnMessageActiveDialog>
     );
     _timer = Timer.periodic(
       kRetryNetworkTimeout,
-      (_) {
-        _messagesInteractor.pingPeer(widget.message.peerId).then(
-          (isOnline) {
-            if (_isPeerOnline != isOnline) {
-              _isPeerOnline = isOnline;
-              if (mounted) setState(() {});
+      (_) => _messagesInteractor.pingPeer(widget.message.peerId).then(
+        (isOnline) {
+          if (_isPeerOnline != isOnline) {
+            _isPeerOnline = isOnline;
+            if (mounted) {
+              setState(() {});
             }
-          },
-        );
-      },
+          }
+        },
+      ),
     );
   }
 
@@ -80,91 +80,105 @@ class _OnMessageActiveDialogState extends State<OnMessageActiveDialog>
 
   @override
   Widget build(BuildContext context) => BottomSheetWidget(
-        // Title
-        titleString: widget.getTitle(widget.message),
-        // Subtitle
-        textSpan: [
-          TextSpan(text: widget.message.peerId.name, style: styleW600),
-          TextSpan(text: widget.getSubtitle(widget.message)),
-          TextSpan(text: widget.message.vaultId.name, style: styleW600),
-        ],
-        // Card
-        body: Card(
-          child: Padding(
-            padding: paddingAllDefault,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: _isRequestError
-                  // Error
-                  ? [
-                      Text(
-                        'Connection Error',
-                        style: _textTheme.bodyMedium,
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        child: Text('Something went wrong. Please try again.'),
-                      ),
-                      AnimatedBuilder(
-                        animation: _animationController,
-                        builder: (_, __) => LinearProgressIndicator(
-                          value: _animationController.value,
-                        ),
-                      ),
-                    ]
-                  // Peer status
-                  : [
-                      Text(
-                        widget.message.peerId.name,
-                        style: _textTheme.bodySmall,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: _isPeerOnline
-                            ? Text(
-                                'Online',
-                                style: _textTheme.labelMedium?.copyWith(
-                                  color: _brandColors.highlightColor,
-                                ),
-                              )
-                            : Text(
-                                'Offline',
-                                style: _textTheme.labelMedium?.copyWith(
-                                  color: _brandColors.dangerColor,
-                                ),
-                              ),
-                      ),
-                      const Text(
-                        'To approve or reject the request, both '
-                        'Owner and Guardian must run the app at the same time. '
-                        'Ask the Owner to log into the app.',
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-            ),
+    // Title
+    titleString: widget.getTitle(widget.message),
+
+    // Subtitle
+    textSpan: [
+      TextSpan(
+        text: widget.message.peerId.name,
+        style: styleW600,
+      ),
+      TextSpan(
+        text: widget.getSubtitle(widget.message),
+      ),
+      TextSpan(
+        text: widget.message.vaultId.name,
+        style: styleW600,
+      ),
+    ],
+
+    // Card
+    body: Card(
+      child: Padding(
+        padding: paddingAllDefault,
+        child: Column(
+          mainAxisAlignment: .center,
+          children: _isRequestError
+              // Error
+              ? [
+                  Text(
+                    'Connection Error',
+                    style: _textTheme.bodyMedium,
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Text(
+                      'Something went wrong. Please try again.',
+                    ),
+                  ),
+                  AnimatedBuilder(
+                    animation: _animationController,
+                    builder: (_, _) => LinearProgressIndicator(
+                      value: _animationController.value,
+                    ),
+                  ),
+                ]
+              // Peer status
+              : [
+                  Text(
+                    widget.message.peerId.name,
+                    style: _textTheme.bodySmall,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: _isPeerOnline
+                        ? Text(
+                            'Online',
+                            style: _textTheme.labelMedium?.copyWith(
+                              color: _brandColors.highlightColor,
+                            ),
+                          )
+                        : Text(
+                            'Offline',
+                            style: _textTheme.labelMedium?.copyWith(
+                              color: _brandColors.dangerColor,
+                            ),
+                          ),
+                  ),
+                  const Text(
+                    'To approve or reject the request, both '
+                    'Owner and Guardian must run the app at the same time. '
+                    'Ask the Owner to log into the app.',
+                    textAlign: .center,
+                  ),
+                ],
+        ),
+      ),
+    ),
+    // Buttons
+    footer: Row(
+      children: [
+        Expanded(
+          child: FilledButton(
+            onPressed: _isPeerOnline && !_isRequestError && !_isRequestActive
+                ? () => _sendRespone(.rejected)
+                : null,
+            child: const Text('Reject'),
           ),
         ),
-        // Buttons
-        footer: Row(children: [
-          Expanded(
-            child: FilledButton(
-              onPressed: _isPeerOnline && !_isRequestError && !_isRequestActive
-                  ? () => _sendRespone(MessageStatus.rejected)
-                  : null,
-              child: const Text('Reject'),
-            ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: FilledButton(
+            onPressed: _isPeerOnline && !_isRequestError && !_isRequestActive
+                ? () => _sendRespone(.accepted)
+                : null,
+            child: const Text('Approve'),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: FilledButton(
-              onPressed: _isPeerOnline && !_isRequestError && !_isRequestActive
-                  ? () => _sendRespone(MessageStatus.accepted)
-                  : null,
-              child: const Text('Approve'),
-            ),
-          ),
-        ]),
-      );
+        ),
+      ],
+    ),
+  );
 
   Future<void> _sendRespone(MessageStatus status) async {
     _isRequestActive = true;
@@ -180,7 +194,9 @@ class _OnMessageActiveDialogState extends State<OnMessageActiveDialog>
         _isRequestError = true;
         _isRequestActive = false;
       });
-      _animationController.forward(from: 0).then(
+      _animationController
+          .forward(from: 0)
+          .then(
             (_) => setState(() {
               _isRequestError = false;
               _isRequestActive = false;

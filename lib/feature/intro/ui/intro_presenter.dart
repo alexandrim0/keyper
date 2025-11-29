@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:guardian_keyper/data/managers/auth_manager.dart';
 import 'package:guardian_keyper/ui/presenters/page_presenter_base.dart';
 
@@ -18,7 +20,7 @@ final class IntroPresenter extends PagePresentererBase {
 
   void nextSlide() {
     if (_introStep == IntrosPage.slides.length - 1) {
-      nextPage();
+      unawaited(nextPage());
     } else {
       _introStep++;
       notifyListeners();

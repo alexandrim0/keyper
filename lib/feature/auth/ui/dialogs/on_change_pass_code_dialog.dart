@@ -21,19 +21,19 @@ class OnChangePassCodeDialog {
       ),
       cancelButton: AuthDialogMixin.cancelButton,
       onCancelled: Navigator.of(context).pop,
-      onError: (_) {
+      onError: (_) async {
         showSnackBar(
           context,
           text: 'Wrong passcode!',
           isFloating: true,
           isError: true,
         );
-        authManager.vibrate();
+        return authManager.vibrate();
       },
-      onUnlocked: () {
+      onUnlocked: () async {
         Navigator.of(context).pop();
         final inputController = InputController();
-        screenLockCreate(
+        return screenLockCreate(
           context: context,
           digits: kPassCodeLength,
           config: AuthDialogMixin.getScreenLockConfig(context),
@@ -51,14 +51,14 @@ class OnChangePassCodeDialog {
           onCancelled: Navigator.of(context).pop,
           customizedButtonChild: AuthDialogMixin.resetButton,
           customizedButtonTap: inputController.unsetConfirmed,
-          onError: (_) {
+          onError: (_) async {
             showSnackBar(
               context,
               text: 'Wrong passcode!',
               isFloating: true,
               isError: true,
             );
-            authManager.vibrate();
+            return authManager.vibrate();
           },
           onConfirmed: (passCode) async {
             await authManager.setPassCode(passCode);

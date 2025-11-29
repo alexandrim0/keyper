@@ -33,9 +33,9 @@ abstract base class VaultSecretPresenterBase extends VaultPresenterBase {
     if (messages.where((m) => m.hasResponse).length == vault.maxSize) {
       stopListenResponse();
     } else {
-      for (final message in messages.where((m) => m.hasNoResponse)) {
-        _vaultInteractor.sendToGuardian(message);
-      }
+      messages
+          .where((m) => m.hasNoResponse)
+          .forEach(_vaultInteractor.sendToGuardian);
     }
   }
 
@@ -47,7 +47,9 @@ abstract base class VaultSecretPresenterBase extends VaultPresenterBase {
     if (message.hasNoResponse) return null;
 
     final storedMessage = messages.lookup(message);
-    if (storedMessage == null || storedMessage.hasResponse) return null;
+    if (storedMessage == null || storedMessage.hasResponse) {
+      return null;
+    }
 
     messages.remove(message);
     final updatedMessage = storedMessage.copyWith(

@@ -1,4 +1,4 @@
-// ignore_for_file: no_adjacent_strings_in_list
+// ignore_for_file: no_adjacent_strings_in_list //
 
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:vector_graphics/vector_graphics.dart';
@@ -40,7 +40,7 @@ class IntrosPage extends StatelessWidget {
     final presenter = context.watch<IntroPresenter>();
     final theme = Theme.of(context);
     return GestureDetector(
-      behavior: HitTestBehavior.translucent,
+      behavior: .translucent,
       onHorizontalDragEnd: (details) {
         if (details.velocity.pixelsPerSecond.dx < -5) {
           presenter.nextSlide();
@@ -53,6 +53,7 @@ class IntrosPage extends StatelessWidget {
         child: Column(
           children: [
             const Spacer(),
+
             // Slide
             Padding(
               padding: const EdgeInsets.only(bottom: 32),
@@ -63,7 +64,7 @@ class IntrosPage extends StatelessWidget {
               child: Text(
                 _titles[presenter.introStep],
                 style: theme.textTheme.headlineMedium,
-                textAlign: TextAlign.center,
+                textAlign: .center,
               ),
             ),
             Padding(
@@ -71,13 +72,14 @@ class IntrosPage extends StatelessWidget {
               child: Text(
                 _subtitles[presenter.introStep],
                 style: theme.textTheme.bodyMedium,
-                textAlign: TextAlign.center,
+                textAlign: .center,
               ),
             ),
             const Spacer(flex: 2),
+
             // Control bar
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: .spaceBetween,
               children: [
                 TextButton(
                   onPressed: presenter.nextPage,
@@ -86,9 +88,10 @@ class IntrosPage extends StatelessWidget {
                     style: theme.textTheme.titleMedium,
                   ),
                 ),
+
                 // Dots
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: .center,
                   children: [
                     for (var i = 0; i < _titles.length; i++)
                       Padding(
@@ -98,7 +101,7 @@ class IntrosPage extends StatelessWidget {
                             color: i == presenter.introStep
                                 ? theme.colorScheme.onSecondary
                                 : theme.colorScheme.secondary,
-                            shape: BoxShape.circle,
+                            shape: .circle,
                           ),
                           height: 8,
                           width: 8,

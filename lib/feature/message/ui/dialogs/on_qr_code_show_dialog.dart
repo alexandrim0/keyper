@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -18,16 +19,17 @@ class OnQRCodeShowDialog extends StatefulWidget {
     required String title,
     required String subtitle,
     required MessageModel message,
-  }) =>
-      Navigator.of(context).push(CupertinoPageRoute(
-        settings: const RouteSettings(name: route),
-        builder: (_) => OnQRCodeShowDialog(
-          caption: caption,
-          title: title,
-          subtitle: subtitle,
-          message: message,
-        ),
-      ));
+  }) => Navigator.of(context).push(
+    CupertinoPageRoute(
+      settings: const RouteSettings(name: route),
+      builder: (_) => OnQRCodeShowDialog(
+        caption: caption,
+        title: title,
+        subtitle: subtitle,
+        message: message,
+      ),
+    ),
+  );
 
   const OnQRCodeShowDialog({
     required this.caption,
@@ -58,126 +60,127 @@ class _OnQRCodeShowDialogState extends State<OnQRCodeShowDialog> {
   @override
   void initState() {
     super.initState();
-    GetIt.I<PlatformService>().wakelockEnable();
+    unawaited(GetIt.I<PlatformService>().wakelockEnable());
   }
 
   @override
   void dispose() {
-    GetIt.I<PlatformService>().wakelockDisable();
+    unawaited(GetIt.I<PlatformService>().wakelockDisable());
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) => ScaffoldSafe(
-        appBar: AppBar(
-          title: Text(widget.caption),
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+    appBar: AppBar(
+      title: Text(widget.caption),
+      centerTitle: true,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () => Navigator.pop(context),
+      ),
+    ),
+    child: Column(
+      children: [
+        // Text
+        PageTitle(
+          subtitle: widget.subtitle,
+        ),
+
+        // QR Code
+        Expanded(
+          child: AspectRatio(
+            aspectRatio: 1,
+            child: Container(
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: _colorScheme.surface,
+              ),
+              margin: _padding,
+              child: QrImageView(
+                errorCorrectionLevel: QrErrorCorrectLevel.M,
+                dataModuleStyle: QrDataModuleStyle(
+                  color: _colorScheme.onSurface,
+                  dataModuleShape: .square,
+                ),
+                eyeStyle: QrEyeStyle(
+                  color: _colorScheme.onSurface,
+                  eyeShape: .square,
+                ),
+                padding: _padding,
+                data: _qrCode,
+              ),
+            ),
           ),
         ),
-        child: Column(
-          children: [
-            // Text
-            PageTitle(
-              subtitle: widget.subtitle,
-            ),
-            // QR Code
-            Expanded(
-              child: AspectRatio(
-                aspectRatio: 1,
+
+        // Text Code
+        const Text('Text Code'),
+
+        // Share Button
+        Padding(
+          padding: paddingAllDefault,
+          child: Row(
+            children: [
+              Expanded(
                 child: Container(
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
+                  alignment: .center,
+                  decoration: ShapeDecoration(
                     color: _colorScheme.surface,
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(color: _colorScheme.secondary),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: .circular(8),
+                        bottomLeft: .circular(8),
+                      ),
+                    ),
                   ),
-                  margin: _padding,
-                  child: QrImageView(
-                    errorCorrectionLevel: QrErrorCorrectLevel.M,
-                    dataModuleStyle: QrDataModuleStyle(
-                      color: _colorScheme.onSurface,
-                      dataModuleShape: QrDataModuleShape.square,
+                  height: kButtonSize,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Text(
+                      _qrCode,
+                      style: Theme.of(context).textTheme.bodySmall,
+                      overflow: .ellipsis,
                     ),
-                    eyeStyle: QrEyeStyle(
-                      color: _colorScheme.onSurface,
-                      eyeShape: QrEyeShape.square,
-                    ),
-                    padding: _padding,
-                    data: _qrCode,
                   ),
                 ),
               ),
-            ),
-            // Text Code
-            const Text('Text Code'),
-            // Share Button
-            Padding(
-              padding: paddingAllDefault,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      alignment: Alignment.center,
-                      decoration: ShapeDecoration(
-                        color: _colorScheme.surface,
-                        shape: RoundedRectangleBorder(
-                          side: BorderSide(color: _colorScheme.secondary),
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(8),
-                            bottomLeft: Radius.circular(8),
-                          ),
-                        ),
-                      ),
-                      height: kButtonSize,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Text(
-                          _qrCode,
-                          style: Theme.of(context).textTheme.bodySmall,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
+              Container(
+                decoration: ShapeDecoration(
+                  color: _colorScheme.primary,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      topRight: .circular(8),
+                      bottomRight: .circular(8),
                     ),
                   ),
-                  Container(
-                    decoration: ShapeDecoration(
-                      color: _colorScheme.primary,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(8),
-                          bottomRight: Radius.circular(8),
-                        ),
-                      ),
+                ),
+                height: kButtonSize,
+                child: Builder(
+                  builder: (context) => IconButton(
+                    icon: Transform.flip(
+                      flipX: true,
+                      child: const Icon(Icons.reply),
                     ),
-                    height: kButtonSize,
-                    child: Builder(
-                      builder: (context) => IconButton(
-                        icon: Transform.flip(
-                          flipX: true,
-                          child: const Icon(Icons.reply),
-                        ),
-                        onPressed: () {
-                          final box = context.findRenderObject() as RenderBox?;
-                          GetIt.I<PlatformService>().share(
-                            'This is a SINGLE-USE authentication token for '
-                            'Guardian Keyper. DO NOT REUSE IT! \n $_qrCode',
-                            subject: 'Guardian Code',
-                            sharePositionOrigin:
-                                box!.localToGlobal(Offset.zero) & box.size,
-                          );
-                        },
-                      ),
-                    ),
+                    onPressed: () async {
+                      final box = context.findRenderObject() as RenderBox?;
+                      return GetIt.I<PlatformService>().share(
+                        'This is a SINGLE-USE authentication token for '
+                        'Guardian Keyper. DO NOT REUSE IT! \n $_qrCode',
+                        subject: 'Guardian Code',
+                        sharePositionOrigin:
+                            box!.localToGlobal(Offset.zero) & box.size,
+                      );
+                    },
                   ),
-                ],
+                ),
               ),
-            ),
-            if (_screenSize.isBig) const Spacer(),
-          ],
+            ],
+          ),
         ),
-      );
+        if (_screenSize.isBig) const Spacer(),
+      ],
+    ),
+  );
 }

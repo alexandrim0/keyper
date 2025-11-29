@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:guardian_keyper/ui/widgets/common.dart';
 
 import 'package:guardian_keyper/feature/auth/ui/dialogs/on_create_pass_code.dart';
@@ -15,15 +17,19 @@ class _SetPasscodePageState extends State<SetPasscodePage> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() async {
-      if (mounted) await OnCreatePassCodeDialog.show(context);
-      if (mounted) {
-        final presenter = context.read<IntroPresenter>();
-        presenter.hasBiometrics
-            ? presenter.nextPage()
-            : Navigator.of(context).pop();
-      }
-    });
+    unawaited(
+      Future.microtask(() async {
+        if (mounted) {
+          await OnCreatePassCodeDialog.show(context);
+        }
+        if (mounted) {
+          final presenter = context.read<IntroPresenter>();
+          presenter.hasBiometrics
+              ? presenter.nextPage()
+              : Navigator.of(context).pop();
+        }
+      }),
+    );
   }
 
   @override

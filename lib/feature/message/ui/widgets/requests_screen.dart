@@ -1,6 +1,5 @@
 import 'package:guardian_keyper/ui/widgets/common.dart';
 
-import 'package:guardian_keyper/feature/message/domain/entity/message_model.dart';
 import 'package:guardian_keyper/feature/message/domain/use_case/message_interactor.dart';
 
 import 'request_list_tile.dart';
@@ -26,7 +25,7 @@ class RequestsScreen extends StatelessWidget {
               ? const Center(
                   child: Text(
                     'You don’t have any requests',
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                     softWrap: true,
                   ),
                 )
@@ -45,13 +44,15 @@ class RequestsScreen extends StatelessWidget {
                               padding: paddingHDefault,
                               child: const Text('Move to Resolved'),
                             ),
-                            direction: DismissDirection.startToEnd,
+                            direction: .startToEnd,
                             confirmDismiss: (_) =>
                                 OnMessageArchivateDialog.show(context),
-                            onDismissed: (_) => messagesInteractor
-                                .archivateMessage(request.copyWith(
-                              status: MessageStatus.rejected,
-                            )),
+                            onDismissed: (_) =>
+                                messagesInteractor.archivateMessage(
+                                  request.copyWith(
+                                    status: .rejected,
+                                  ),
+                                ),
                             child: RequestListTile(message: request),
                           )
                         : RequestListTile(
@@ -59,7 +60,7 @@ class RequestsScreen extends StatelessWidget {
                             message: request,
                           );
                   },
-                  separatorBuilder: (_, __) =>
+                  separatorBuilder: (_, _) =>
                       const Padding(padding: paddingT12),
                 );
         },

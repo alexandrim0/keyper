@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:guardian_keyper/ui/utils/current_route_observer.dart';
@@ -22,17 +24,21 @@ class _RequestHandlerState extends State<RequestHandler> {
   final _routeObserver = GetIt.I<CurrentRouteObserver>();
 
   late final _requestsStream = GetIt.I<MessageInteractor>().watch().listen(
-    (e) {
-      if (!_canShowNotification || e.isDeleted) return;
+    (e) async {
+      if (!_canShowNotification || e.isDeleted) {
+        return;
+      }
       final message = e.message;
-      if (message == null || message.isCreated) return;
+      if (message == null || message.isCreated) {
+        return;
+      }
       final currentRouteName = _routeObserver.currentRouteName;
       if (currentRouteName == '/' ||
           currentRouteName == OnQRCodeShowDialog.route) {
         if (message.isReceived || message.hasResponse) {
           _canShowNotification = false;
           if (mounted) {
-            OnMessageActiveDialog.show(
+            return OnMessageActiveDialog.show(
               context,
               message: message,
             ).then(
@@ -59,7 +65,7 @@ class _RequestHandlerState extends State<RequestHandler> {
 
   @override
   void dispose() {
-    _requestsStream.cancel();
+    unawaited(_requestsStream.cancel());
     super.dispose();
   }
 

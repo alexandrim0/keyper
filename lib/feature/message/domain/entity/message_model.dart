@@ -49,10 +49,10 @@ class MessageModel extends Serializable {
     this.version = currentVersion,
     MessageId? id,
     DateTime? timestamp,
-    this.status = MessageStatus.created,
+    this.status = .created,
     this.payload,
-  })  : id = id ?? MessageId(),
-        timestamp = timestamp ?? DateTime.timestamp();
+  }) : id = id ?? MessageId(),
+       timestamp = timestamp ?? DateTime.timestamp();
 
   final int version;
   final MessageId id;
@@ -66,9 +66,9 @@ class MessageModel extends Serializable {
 
   late final int? payloadTypeId = payload == null
       ? null
-      : switch (payload.runtimeType) {
-          const (Vault) => Vault.typeId,
-          const (SecretShard) => SecretShard.typeId,
+      : switch (payload) {
+          Vault() => Vault.typeId,
+          SecretShard() => SecretShard.typeId,
           _ => throw const FormatException('Unsupported payload type!'),
         };
 
@@ -88,31 +88,30 @@ class MessageModel extends Serializable {
   SecretShard get secretShard => payload! as SecretShard;
 
   PeerId get ownerId => switch (payload) {
-        final Vault vault => vault.ownerId,
-        final SecretShard shard => shard.ownerId,
-        _ => throw const FormatException('Payload have no ownerId!'),
-      };
+    final Vault vault => vault.ownerId,
+    final SecretShard shard => shard.ownerId,
+    _ => throw const FormatException('Payload have no ownerId!'),
+  };
 
   VaultId get vaultId => switch (payload) {
-        final Vault vault => vault.id,
-        final SecretShard shard => shard.vaultId,
-        _ => throw const FormatException('Payload have no vaultId!'),
-      };
+    final Vault vault => vault.id,
+    final SecretShard shard => shard.vaultId,
+    _ => throw const FormatException('Payload have no vaultId!'),
+  };
 
-  bool get isCreated => status == MessageStatus.created;
-  bool get isNotRequested => status != MessageStatus.created;
+  bool get isCreated => status == .created;
+  bool get isNotRequested => status != .created;
 
-  bool get isReceived => status == MessageStatus.received;
-  bool get isNotReceived => status != MessageStatus.received;
+  bool get isReceived => status == .received;
+  bool get isNotReceived => status != .received;
 
-  bool get isAccepted => status == MessageStatus.accepted;
-  bool get isNotAccepted => status != MessageStatus.accepted;
+  bool get isAccepted => status == .accepted;
+  bool get isNotAccepted => status != .accepted;
 
-  bool get isRejected => status == MessageStatus.rejected;
-  bool get isNotRejected => status != MessageStatus.rejected;
+  bool get isRejected => status == .rejected;
+  bool get isNotRejected => status != .rejected;
 
-  bool get hasResponse =>
-      status != MessageStatus.created && status != MessageStatus.received;
+  bool get hasResponse => status != .created && status != .received;
 
   bool get hasNoResponse => !hasResponse;
 
@@ -120,8 +119,7 @@ class MessageModel extends Serializable {
       timestamp.isBefore(DateTime.timestamp().subtract(requestExpires));
 
   bool get isForPrune =>
-      (status == MessageStatus.created || status == MessageStatus.received) &&
-      isExpired;
+      (status == .created || status == .received) && isExpired;
 
   factory MessageModel.fromBase64(String value) =>
       MessageModel.fromBytes(base64Decode(value));
@@ -131,22 +129,22 @@ class MessageModel extends Serializable {
     final version = u.unpackInt();
     return switch (version) {
       currentVersion => MessageModel(
-          version: version!,
-          id: MessageId.fromBytes(u.unpackBinary()),
-          peerId: PeerId.fromBytes(u.unpackBinary()),
-          timestamp: DateTime.fromMillisecondsSinceEpoch(
-            u.unpackInt()!,
-            isUtc: true,
-          ),
-          code: MessageCode.values[u.unpackInt()!],
-          status: MessageStatus.values[u.unpackInt()!],
-          payload: switch (u.unpackInt()) {
-            null => null,
-            Vault.typeId => Vault.fromBytes(u.unpackBinary()),
-            SecretShard.typeId => SecretShard.fromBytes(u.unpackBinary()),
-            _ => throw const FormatException('Unsupported payload type!'),
-          },
+        version: version!,
+        id: MessageId.fromBytes(u.unpackBinary()),
+        peerId: PeerId.fromBytes(u.unpackBinary()),
+        timestamp: DateTime.fromMillisecondsSinceEpoch(
+          u.unpackInt()!,
+          isUtc: true,
         ),
+        code: MessageCode.values[u.unpackInt()!],
+        status: MessageStatus.values[u.unpackInt()!],
+        payload: switch (u.unpackInt()) {
+          null => null,
+          Vault.typeId => Vault.fromBytes(u.unpackBinary()),
+          SecretShard.typeId => SecretShard.fromBytes(u.unpackBinary()),
+          _ => throw const FormatException('Unsupported payload type!'),
+        },
+      ),
       _ => throw const FormatException('Unsupported version of Message!'),
     };
   }
@@ -173,14 +171,13 @@ class MessageModel extends Serializable {
     MessageStatus? status,
     Serializable? payload,
     bool? emptyPayload,
-  }) =>
-      MessageModel(
-        version: version,
-        id: id,
-        code: code,
-        timestamp: timestamp,
-        peerId: peerId ?? this.peerId,
-        status: status ?? this.status,
-        payload: emptyPayload ?? false ? null : payload ?? this.payload,
-      );
+  }) => MessageModel(
+    version: version,
+    id: id,
+    code: code,
+    timestamp: timestamp,
+    peerId: peerId ?? this.peerId,
+    status: status ?? this.status,
+    payload: emptyPayload ?? false ? null : payload ?? this.payload,
+  );
 }

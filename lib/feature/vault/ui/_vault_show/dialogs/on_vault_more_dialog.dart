@@ -8,12 +8,11 @@ class OnVaultMoreDialog extends StatelessWidget {
   static Future<void> show(
     BuildContext context, {
     required VaultId vaultId,
-  }) =>
-      showModalBottomSheet<bool>(
-        context: context,
-        isScrollControlled: true,
-        builder: (_) => OnVaultMoreDialog(vaultId: vaultId),
-      );
+  }) => showModalBottomSheet<bool>(
+    context: context,
+    isScrollControlled: true,
+    builder: (_) => OnVaultMoreDialog(vaultId: vaultId),
+  );
 
   const OnVaultMoreDialog({
     required this.vaultId,
@@ -24,12 +23,15 @@ class OnVaultMoreDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BottomSheetWidget(
-        footer: FilledButton(
-          child: const Text('Remove the Safe'),
-          onPressed: () {
-            Navigator.of(context).pop();
-            OnVaultRemoveDialog.show(context, vaultId: vaultId);
-          },
-        ),
-      );
+    footer: FilledButton(
+      child: const Text('Remove the Safe'),
+      onPressed: () async {
+        Navigator.of(context).pop();
+        return OnVaultRemoveDialog.show(
+          context,
+          vaultId: vaultId,
+        );
+      },
+    ),
+  );
 }

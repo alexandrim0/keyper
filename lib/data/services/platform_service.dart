@@ -1,10 +1,10 @@
 import 'dart:io';
-import 'dart:async';
 import 'dart:ui';
+import 'dart:async';
 
-import 'package:share_plus/share_plus.dart';
 import 'package:vibration/vibration.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -33,8 +33,9 @@ class PlatformService {
   }) async {
     try {
       return await _localAuth.authenticate(
+        biometricOnly: biometricOnly,
         localizedReason: localizedReason,
-        options: AuthenticationOptions(biometricOnly: biometricOnly),
+        persistAcrossBackgrounding: false,
       );
     } catch (_) {
       return false;
@@ -45,12 +46,14 @@ class PlatformService {
     String text, {
     String? subject,
     Rect? sharePositionOrigin,
-  }) =>
-      Share.share(
-        text,
-        subject: subject,
-        sharePositionOrigin: sharePositionOrigin,
-      );
+  }) => SharePlus.instance.share(
+    ShareParams(
+      text: text,
+      subject: subject,
+      mailToFallbackEnabled: false,
+      sharePositionOrigin: sharePositionOrigin,
+    ),
+  );
 
   Future<bool> openMarket() =>
       launchUrl(Uri.parse(Platform.isAndroid ? urlPlayMarket : urlAppStore));

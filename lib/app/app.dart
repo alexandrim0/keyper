@@ -25,52 +25,48 @@ class App extends StatelessWidget {
   final DI di;
 
   @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: di.init(),
-      builder: (context, _) {
-        if (di.isNotInited) return const Splash();
-
-        return MultiProvider(
-          providers: [
-            ChangeNotifierProvider<SettingsPresenter>(
-              create: (_) => SettingsPresenter(),
-            ),
-          ],
-          child: Selector<SettingsPresenter, ThemeMode>(
-            selector: (_, p) => p.themeMode,
-            builder: (context, themeMode, _) {
-              SystemChrome.setSystemUIOverlayStyle(switch (themeMode) {
-                ThemeMode.dark => systemStyleDark,
-                ThemeMode.light => systemStyleLight,
-                ThemeMode.system =>
-                  MediaQuery.of(context).platformBrightness == Brightness.dark
-                      ? systemStyleDark
-                      : systemStyleLight,
-              });
-              return MaterialApp(
-                debugShowCheckedModeBanner: false,
-                title: 'Guardian Keyper',
-                routes: routes,
-                themeMode: themeMode,
-                theme: lightTheme,
-                darkTheme: darkTheme,
-                themeAnimationCurve: Curves.bounceInOut,
-                themeAnimationDuration: const Duration(seconds: 1),
-                navigatorObservers: [
-                  GetIt.I<SentryNavigatorObserver>(),
-                  GetIt.I<CurrentRouteObserver>(),
-                ],
-                home: const Lifecycle(
-                  child: RequestHandler(
-                    child: HomeScreen(),
+  Widget build(BuildContext context) => FutureBuilder(
+    future: di.init(),
+    builder: (_, _) => di.isNotInited
+        ? const Splash()
+        : MultiProvider(
+            providers: [
+              ChangeNotifierProvider<SettingsPresenter>(
+                create: (_) => SettingsPresenter(),
+              ),
+            ],
+            child: Selector<SettingsPresenter, ThemeMode>(
+              selector: (_, p) => p.themeMode,
+              builder: (context, themeMode, _) {
+                SystemChrome.setSystemUIOverlayStyle(switch (themeMode) {
+                  .dark => systemStyleDark,
+                  .light => systemStyleLight,
+                  .system =>
+                    MediaQuery.of(context).platformBrightness == .dark
+                        ? systemStyleDark
+                        : systemStyleLight,
+                });
+                return MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  title: 'Guardian Keyper',
+                  routes: routes,
+                  theme: lightTheme,
+                  darkTheme: darkTheme,
+                  themeMode: themeMode,
+                  themeAnimationCurve: Curves.bounceInOut,
+                  themeAnimationDuration: const Duration(seconds: 1),
+                  navigatorObservers: [
+                    GetIt.I<SentryNavigatorObserver>(),
+                    GetIt.I<CurrentRouteObserver>(),
+                  ],
+                  home: const Lifecycle(
+                    child: RequestHandler(
+                      child: HomeScreen(),
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
-        );
-      },
-    );
-  }
+  );
 }

@@ -14,13 +14,15 @@ export 'package:provider/provider.dart';
 class SettingsPresenter with ChangeNotifier, NameHelperMixin {
   SettingsPresenter() {
     _settingsChanges.resume();
-    name = _settingsRepository.get<String>(PreferencesKeys.keyDeviceName, '')!;
+    name = _settingsRepository.get<String>(.keyDeviceName, '')!;
     if (name.isEmpty) {
-      _platformService.getDeviceName().then(
-        (value) {
-          name = value;
-          notifyListeners();
-        },
+      unawaited(
+        _platformService.getDeviceName().then(
+          (value) {
+            name = value;
+            notifyListeners();
+          },
+        ),
       );
     }
     unawaited(onResumed());
@@ -30,8 +32,9 @@ class SettingsPresenter with ChangeNotifier, NameHelperMixin {
   final _platformService = GetIt.I<PlatformService>();
   final _settingsRepository = GetIt.I<SettingsRepository>();
 
-  late final _settingsChanges =
-      _settingsRepository.watch().listen((_) => notifyListeners());
+  late final _settingsChanges = _settingsRepository.watch().listen(
+    (_) => notifyListeners(),
+  );
 
   bool _hasBiometrics = false;
 
@@ -44,31 +47,30 @@ class SettingsPresenter with ChangeNotifier, NameHelperMixin {
   bool get useBiometrics => hasBiometrics && isBiometricsEnabled;
 
   String get passCode => _settingsRepository.get<String>(
-        PreferencesKeys.keyPassCode,
-        '',
-      )!;
+    .keyPassCode,
+    '',
+  )!;
 
   bool get isBiometricsEnabled => _settingsRepository.get<bool>(
-        PreferencesKeys.keyIsBiometricsEnabled,
-        false,
-      )!;
+    .keyIsBiometricsEnabled,
+    false,
+  )!;
 
   bool get isBootstrapEnabled => _settingsRepository.get<bool>(
-        PreferencesKeys.keyIsBootstrapEnabled,
-        true,
-      )!;
+    .keyIsBootstrapEnabled,
+    true,
+  )!;
 
-  ThemeMode get themeMode => switch (_settingsRepository.get<bool>(
-        PreferencesKeys.keyIsDarkModeOn,
-      )) {
-        true => ThemeMode.dark,
-        false => ThemeMode.light,
-        null => ThemeMode.system,
+  ThemeMode get themeMode =>
+      switch (_settingsRepository.get<bool>(.keyIsDarkModeOn)) {
+        true => .dark,
+        false => .light,
+        null => .system,
       };
 
   @override
   void dispose() {
-    _settingsChanges.cancel();
+    unawaited(_settingsChanges.cancel());
     super.dispose();
   }
 
@@ -80,39 +82,39 @@ class SettingsPresenter with ChangeNotifier, NameHelperMixin {
 
   Future<void> setIsThemeMode(ThemeMode value) =>
       _settingsRepository.setNullable<bool>(
-        PreferencesKeys.keyIsDarkModeOn,
+        .keyIsDarkModeOn,
         switch (value) {
-          ThemeMode.dark => true,
-          ThemeMode.light => false,
-          ThemeMode.system => null,
+          .dark => true,
+          .light => false,
+          .system => null,
         },
       );
 
   Future<void> setIsBootstrapEnabled(bool value) =>
       _settingsRepository.set<bool>(
-        PreferencesKeys.keyIsBootstrapEnabled,
+        .keyIsBootstrapEnabled,
         value,
       );
 
   Future<void> setIsBiometricsEnabled(bool value) =>
       _settingsRepository.set<bool>(
-        PreferencesKeys.keyIsBiometricsEnabled,
+        .keyIsBiometricsEnabled,
         value,
       );
 
   Future<void> setDeviceName([String? value]) async {
     name = value ?? name;
     await _settingsRepository.set<String>(
-      PreferencesKeys.keyDeviceName,
+      .keyDeviceName,
       name,
     );
     notifyListeners();
   }
 
   Future<void> setPassCode(String value) => _settingsRepository.set<String>(
-        PreferencesKeys.keyPassCode,
-        value,
-      );
+    .keyPassCode,
+    value,
+  );
 
   Future<void> vibrate() => _platformService.vibrate();
 

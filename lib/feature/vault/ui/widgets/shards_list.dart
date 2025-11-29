@@ -22,7 +22,7 @@ class ShardsList extends StatelessWidget {
         return Padding(
           padding: paddingAllDefault,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: .stretch,
             children: [
               Expanded(
                 child: shards.isEmpty
@@ -36,18 +36,18 @@ class ShardsList extends StatelessWidget {
                         ),
                       )
                     : ListView.separated(
-                        separatorBuilder: (_, __) =>
-                            const Padding(padding: paddingT12),
                         itemCount: shards.length,
-                        itemBuilder: (context, index) =>
+                        itemBuilder: (_, index) =>
                             ShardsListTile(vault: shards[index]),
+                        separatorBuilder: (_, _) =>
+                            const Padding(padding: paddingT12),
                       ),
               ),
 
               //Buttons
               const Padding(padding: paddingTDefault),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: .spaceAround,
                 children: [
                   Column(
                     children: [
@@ -57,6 +57,7 @@ class ShardsList extends StatelessWidget {
                           size: 48,
                           color: theme.colorScheme.primary,
                         ),
+                        padding: EdgeInsets.zero,
                         onPressed: () async {
                           final message = await GetIt.I<MessageInteractor>()
                               .createJoinVaultCode();
@@ -73,7 +74,6 @@ class ShardsList extends StatelessWidget {
                             );
                           }
                         },
-                        padding: EdgeInsets.zero,
                       ),
                       const Padding(
                         padding: paddingT12,
@@ -89,11 +89,11 @@ class ShardsList extends StatelessWidget {
                           size: 48,
                           color: theme.colorScheme.primary,
                         ),
+                        padding: EdgeInsets.zero,
                         onPressed: () => OnVaultTransferDialog.show(
                           context,
                           vaults: vaultInteractor.shards,
                         ),
-                        padding: EdgeInsets.zero,
                       ),
                       const Padding(
                         padding: paddingT12,

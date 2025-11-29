@@ -1,5 +1,5 @@
-import 'package:guardian_keyper/app/routes.dart';
 import 'package:guardian_keyper/consts.dart';
+import 'package:guardian_keyper/app/routes.dart';
 import 'package:guardian_keyper/ui/widgets/common.dart';
 import 'package:guardian_keyper/ui/theme/brand_colors.dart';
 import 'package:guardian_keyper/data/repositories/settings_repository.dart';
@@ -32,19 +32,20 @@ class SecretListTile extends StatelessWidget {
       trailing: vault.isRestricted
           ? null
           : Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 IconButton(
                   onPressed: vault.isRestricted
                       ? null
                       : () => OnRemoveSecretDialog.show(
-                            context,
-                            vault: vault,
-                            secretId: secretId,
-                          ),
+                          context,
+                          vault: vault,
+                          secretId: secretId,
+                        ),
                   icon: Icon(
                     Icons.delete_outlined,
                     color: vault.isRestricted
+                        // ignore: deprecated_member_use //
                         ? dangerColor.withOpacity(0.5)
                         : dangerColor,
                   ),
@@ -54,15 +55,17 @@ class SecretListTile extends StatelessWidget {
                       ? () async {
                           final isSecretRestoreExplainerHidden =
                               GetIt.I<SettingsRepository>().get<bool>(
-                                      PreferencesKeys
-                                          .keyIsSecretRestoreExplainerHidden) ??
-                                  false;
+                                .keyIsSecretRestoreExplainerHidden,
+                              ) ??
+                              false;
                           if (!isSecretRestoreExplainerHidden &&
                               context.mounted) {
                             final shouldContinue =
                                 await OnSecretRestoreDialog.show(context) ??
-                                    false;
-                            if (!shouldContinue) return;
+                                false;
+                            if (!shouldContinue) {
+                              return;
+                            }
                           }
                           if (context.mounted) {
                             Navigator.of(context).pushNamed(

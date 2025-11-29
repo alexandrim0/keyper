@@ -16,12 +16,13 @@ export 'package:get_it/get_it.dart';
 class NetworkManager {
   NetworkManager({
     Router? router,
-  }) : _router = router ??
-            Router.mdns(
-              port: bsPort,
-              serviceName: 'Guardian Keyper',
-              serviceType: '_guardianKeyper._udp',
-            );
+  }) : _router =
+           router ??
+           Router.mdns(
+             port: bsPort,
+             serviceName: 'Guardian Keyper',
+             serviceType: '_guardianKeyper._udp',
+           );
 
   final Router _router;
 
@@ -29,8 +30,9 @@ class NetworkManager {
 
   final _settingsRepository = GetIt.I<SettingsRepository>();
 
-  late final _settingsChanges =
-      _settingsRepository.watch().listen(_updateSettings);
+  late final _settingsChanges = _settingsRepository.watch().listen(
+    _updateSettings,
+  );
 
   late final _messageStream = _router.messageStream.asBroadcastStream();
 
@@ -43,10 +45,10 @@ class NetworkManager {
       .asBroadcastStream();
 
   Future<NetworkManager> init() async {
-    final seed = _settingsRepository.get<Uint8List>(PreferencesKeys.keySeed);
+    final seed = _settingsRepository.get<Uint8List>(.keySeed);
     if (seed == null) {
       await _settingsRepository.set<Uint8List>(
-        PreferencesKeys.keySeed,
+        .keySeed,
         await _router.init(),
       );
     } else {
@@ -55,12 +57,12 @@ class NetworkManager {
     _selfId = PeerId(
       token: _router.selfId.value,
       name: _settingsRepository.get<String>(
-        PreferencesKeys.keyDeviceName,
+        .keyDeviceName,
         await _platformService.getDeviceName(),
       )!,
     );
     await _toggleBootstrap(
-      _settingsRepository.get<bool>(PreferencesKeys.keyIsBootstrapEnabled),
+      _settingsRepository.get<bool>(.keyIsBootstrapEnabled),
     );
     await start();
     _settingsChanges.resume();
@@ -104,7 +106,7 @@ class NetworkManager {
 
   Future<void> _updateSettings(SettingsRepositoryEvent event) async {
     switch (event.key) {
-      case PreferencesKeys.keyDeviceName:
+      case .keyDeviceName:
         final deviceName = event.value as String?;
         _selfId = _selfId.copyWith(
           name: deviceName == null || deviceName.isEmpty
@@ -112,10 +114,10 @@ class NetworkManager {
               : deviceName,
         );
 
-      case PreferencesKeys.keyIsBootstrapEnabled:
+      case .keyIsBootstrapEnabled:
         await _toggleBootstrap(event.value as bool?);
 
-      // ignore: no_default_cases
+      // ignore: no_default_cases //
       default:
     }
   }

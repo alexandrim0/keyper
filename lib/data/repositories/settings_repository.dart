@@ -14,26 +14,11 @@ typedef SettingsRepositoryEvent<T extends Object> = ({
 });
 
 class SettingsRepository {
-  static const _iOptions = IOSOptions(
-    accessibility: KeychainAccessibility.first_unlock_this_device,
-  );
-  static const _aOptions = AndroidOptions(
-    encryptedSharedPreferences: true,
-    storageCipherAlgorithm: StorageCipherAlgorithm.AES_GCM_NoPadding,
-    keyCipherAlgorithm:
-        KeyCipherAlgorithm.RSA_ECB_OAEPwithSHA_256andMGF1Padding,
-  );
-  static const _storage = FlutterSecureStorage(
-    iOptions: _iOptions,
-    aOptions: _aOptions,
-  );
-
   final _cache = <PreferencesKeys, String?>{};
 
   final _events = StreamController<SettingsRepositoryEvent>.broadcast();
 
   Future<SettingsRepository> init(String pathAppDir) async {
-    // await _preventFalseStart(pathAppDir);
     await _cacheValues();
     return this;
   }
@@ -42,27 +27,26 @@ class SettingsRepository {
     final value = _cache[key];
     return value == null
         ? defaultValue
-        : switch (T) {
-            String => value as T,
-            int => int.parse(value) as T,
-            bool => bool.parse(value) as T,
-            Uint8List => base64Decode(value) as T,
+        : switch (_typeOf<T>()) {
+            _ when T is String => value as T,
+            _ when T is int => int.parse(value) as T,
+            _ when T is bool => bool.parse(value) as T,
+            _ when T is Uint8List => base64Decode(value) as T,
             _ => throw const PreferencesValueFormatException(),
           };
   }
 
   Future<T> set<T extends Object>(PreferencesKeys key, T value) async {
     late final String valueString;
-    switch (T) {
-      case int || bool || String:
+    switch (value) {
+      case int() || bool() || String():
         valueString = value.toString();
         await _storage.write(
           key: key.name,
           value: valueString,
-          aOptions: _aOptions,
           iOptions: _iOptions,
         );
-      case Uint8List:
+      case Uint8List():
         valueString = base64UrlEncode(value as Uint8List);
         await _storage.write(
           key: key.name,
@@ -100,39 +84,31 @@ class SettingsRepository {
     final stream = key == null
         ? _events.stream
         : _events.stream.where((e) => e.key == key);
-    return stream.map<SettingsRepositoryEvent<T>>((e) => (
-          key: e.key,
-          value: e.value as T?,
-        ));
+    return stream.map<SettingsRepositoryEvent<T>>(
+      (e) => (
+        key: e.key,
+        value: e.value as T?,
+      ),
+    );
   }
 
   Future<void> _cacheValues() async {
     for (final key in PreferencesKeys.values) {
       _cache[key] = await _storage.read(
         key: key.name,
-        aOptions: _aOptions,
         iOptions: _iOptions,
       );
     }
   }
 
-  // Future<void> _preventFalseStart(String pathAppDir) async {
-  //   final flagFile = File('$pathAppDir/flags.txt');
-  //   final hasFlag = flagFile.existsSync();
-  //   final lastStart = await _storage.read(
-  //     key: PreferencesKeys.keyLastStart.name,
-  //     aOptions: _aOptions,
-  //     iOptions: _iOptions,
-  //   );
-  //   // Exit if error while reading SharedPreferences
-  //   if (hasFlag && lastStart == null) exit(1);
+  static const _iOptions = IOSOptions(
+    accessibility: KeychainAccessibility.first_unlock_this_device,
+  );
+  static const _storage = FlutterSecureStorage(
+    iOptions: _iOptions,
+  );
 
-  //   await set<int>(
-  //     PreferencesKeys.keyLastStart,
-  //     DateTime.timestamp().millisecondsSinceEpoch,
-  //   );
-  //   if (!hasFlag) await flagFile.create(recursive: true);
-  // }
+  static Type _typeOf<X>() => X;
 }
 
 class PreferencesValueFormatException extends FormatException {

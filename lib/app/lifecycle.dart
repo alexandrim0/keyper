@@ -30,6 +30,7 @@ class _LifecycleState extends State<Lifecycle> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    // ignore: discarded_futures //
     Future.microtask(() async {
       if (_authManager.passCode.isEmpty) {
         if (mounted) await Navigator.of(context).pushNamed(routeIntro);
@@ -45,15 +46,15 @@ class _LifecycleState extends State<Lifecycle> with WidgetsBindingObserver {
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     super.didChangeAppLifecycleState(state);
     switch (state) {
-      case AppLifecycleState.resumed:
+      case .resumed:
         await _authManager.onResumed();
         if (_authManager.needPasscode && mounted) {
           await OnDemandAuthDialog.show(context);
         }
         await _networkManager.start();
-      case AppLifecycleState.inactive:
+      case .inactive:
         await _authManager.onInactive();
-      case AppLifecycleState.paused:
+      case .paused:
         await _networkManager.stop();
         await _vaultRepository.flush();
         await _messageInteractor.flush();

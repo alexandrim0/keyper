@@ -32,14 +32,14 @@ class OnCreatePassCodeDialog {
         await authManager.setPassCode(passCode);
         if (context.mounted) Navigator.of(context).pop();
       },
-      onError: (_) {
+      onError: (_) async {
         showSnackBar(
           context,
           text: 'Wrong passcode!',
           isFloating: true,
           isError: true,
         );
-        authManager.vibrate();
+        return authManager.vibrate();
       },
     ).then((_) => inputController.dispose);
   }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:guardian_keyper/ui/widgets/common.dart';
 
 import '../vault_guardian_add_presenter.dart';
@@ -17,6 +19,54 @@ class _LoadingPageState extends State<LoadingPage> {
   @override
   void initState() {
     super.initState();
+    unawaited(_init());
+  }
+
+  @override
+  Widget build(BuildContext context) => ScaffoldSafe(
+    appBar: AppBar(
+      title: const Text('Adding a Guardian'),
+      centerTitle: true,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () => Navigator.pop(context),
+      ),
+    ),
+    child: Column(
+      crossAxisAlignment: .stretch,
+      children: [
+        // Body
+        Padding(
+          padding: paddingHDefault + const EdgeInsets.only(top: 32),
+          child: Card(
+            child: Column(
+              children: [
+                Padding(
+                  padding: paddingTDefault,
+                  child: Selector<VaultGuardianAddPresenter, bool>(
+                    selector: (_, presenter) => presenter.isWaiting,
+                    builder: (_, isWaiting, _) => Visibility(
+                      visible: isWaiting,
+                      child: const CircularProgressIndicator.adaptive(),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: paddingAllDefault,
+                  child: Text(
+                    'Awaiting Guardian’s response',
+                    style: _theme.textTheme.bodyMedium,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+
+  Future<void> _init() async {
     final presenter = context.read<VaultGuardianAddPresenter>();
     presenter.startRequest().then((message) async {
       if (message.isAccepted) {
@@ -24,66 +74,35 @@ class _LoadingPageState extends State<LoadingPage> {
           showSnackBar(
             context,
             textSpans: [
-              const TextSpan(text: 'You have successfully added '),
-              TextSpan(text: message.peerId.name, style: styleW600),
-              const TextSpan(text: ' as a Guardian for '),
-              TextSpan(text: presenter.vaultId.name, style: styleW600),
+              const TextSpan(
+                text: 'You have successfully added ',
+              ),
+              TextSpan(
+                text: message.peerId.name,
+                style: styleW600,
+              ),
+              const TextSpan(
+                text: ' as a Guardian for ',
+              ),
+              TextSpan(
+                text: presenter.vaultId.name,
+                style: styleW600,
+              ),
             ],
           );
         }
       } else if (message.isRejected) {
-        if (mounted) await OnRejectDialog.show(context);
+        if (mounted) {
+          await OnRejectDialog.show(context);
+        }
       } else {
-        if (mounted) await OnFailDialog.show(context);
+        if (mounted) {
+          await OnFailDialog.show(context);
+        }
       }
-      if (mounted) Navigator.of(context).pop();
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
     });
   }
-
-  @override
-  Widget build(BuildContext context) => ScaffoldSafe(
-        appBar: AppBar(
-          title: const Text('Adding a Guardian'),
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Body
-            const Padding(padding: EdgeInsets.only(top: 32)),
-            Padding(
-              padding: paddingHDefault,
-              child: Card(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: paddingTDefault,
-                      child: Selector<VaultGuardianAddPresenter, bool>(
-                        selector: (_, presenter) => presenter.isWaiting,
-                        builder: (_, isWaiting, __) => Visibility(
-                          visible: isWaiting,
-                          child: const CircularProgressIndicator.adaptive(),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: paddingAllDefault,
-                      child: Text(
-                        'Awaiting Guardian’s response',
-                        style: _theme.textTheme.bodyMedium,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
 }

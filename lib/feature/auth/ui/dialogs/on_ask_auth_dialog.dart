@@ -14,7 +14,9 @@ class OnAskAuthDialog {
     final void Function()? authBio = authManager.useBiometrics
         ? () async {
             if (await authManager.localAuthenticate()) {
-              if (context.mounted) Navigator.of(context).pop();
+              if (context.mounted) {
+                Navigator.of(context).pop();
+              }
               onUnlocked();
             }
           }
@@ -31,22 +33,23 @@ class OnAskAuthDialog {
           child: AuthDialogMixin.currentPassCodeTitle,
         ),
         cancelButton: AuthDialogMixin.cancelButton,
-        customizedButtonChild:
-            authBio == null ? null : const Icon(Icons.fingerprint, size: 48),
+        customizedButtonChild: authBio == null
+            ? null
+            : const Icon(Icons.fingerprint, size: 48),
         customizedButtonTap: authBio,
         onOpened: authBio,
         onUnlocked: () {
           if (context.mounted) Navigator.of(context).pop();
           onUnlocked();
         },
-        onError: (_) {
-          authManager.vibrate();
+        onError: (_) async {
           showSnackBar(
             context,
             text: 'Wrong passcode!',
             isFloating: true,
             isError: true,
           );
+          await authManager.vibrate();
         },
       );
     }

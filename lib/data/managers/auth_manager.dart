@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import '../services/auth_service.dart';
 import '../repositories/settings_repository.dart';
+import '../services/platform_service.dart';
 
 export 'package:get_it/get_it.dart';
 
@@ -12,10 +12,11 @@ typedef AuthManagerState = ({
 
 /// Depends on [SettingsRepository]
 class AuthManager {
-  AuthManager({AuthService? authService})
-      : _authService = authService ?? AuthService();
+  AuthManager({
+    PlatformService? platformService,
+  }) : _platformService = platformService ?? PlatformService();
 
-  final AuthService _authService;
+  final PlatformService _platformService;
 
   final _settingsRepository = GetIt.I<SettingsRepository>();
 
@@ -30,7 +31,7 @@ class AuthManager {
 
   late bool _isBiometricsEnabled =
       _settingsRepository.get<bool>(PreferencesKeys.keyIsBiometricsEnabled) ??
-          true;
+      true;
 
   String get passCode => _passCode;
 
@@ -40,13 +41,14 @@ class AuthManager {
 
   bool get useBiometrics => hasBiometrics && isBiometricsEnabled;
 
-  bool get needPasscode => _lastPausedAt
-      .isBefore(DateTime.now().subtract(const Duration(seconds: 30)));
+  bool get needPasscode => _lastPausedAt.isBefore(
+    DateTime.now().subtract(const Duration(seconds: 30)),
+  );
 
   Stream<AuthManagerState> get state => _stateStreamController.stream;
 
   Future<AuthManager> init() async {
-    _hasBiometrics = await _authService.getHasBiometrics();
+    _hasBiometrics = await _platformService.getHasBiometrics();
     return this;
   }
 
@@ -55,20 +57,20 @@ class AuthManager {
   }
 
   Future<void> onResumed() async {
-    _hasBiometrics = await _authService.getHasBiometrics();
+    _hasBiometrics = await _platformService.getHasBiometrics();
     _updateState();
   }
 
   Future<void> onInactive() async => _lastPausedAt = DateTime.now();
 
-  Future<void> vibrate() => _authService.vibrate();
+  Future<void> vibrate() => _platformService.vibrate();
 
   Future<bool> localAuthenticate({
     bool biometricOnly = true,
     String localizedReason = 'Please authenticate to log into the app',
   }) async {
     try {
-      return await _authService.localAuthenticate(
+      return await _platformService.localAuthenticate(
         biometricOnly: biometricOnly,
         localizedReason: localizedReason,
       );
@@ -95,7 +97,7 @@ class AuthManager {
   }
 
   void _updateState() => _stateStreamController.add((
-        isBiometricsEnabled: _isBiometricsEnabled,
-        hasBiometrics: _hasBiometrics,
-      ));
+    isBiometricsEnabled: _isBiometricsEnabled,
+    hasBiometrics: _hasBiometrics,
+  ));
 }

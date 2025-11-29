@@ -16,8 +16,9 @@ abstract base class VaultPresenterBase extends PagePresentererBase {
 
   final _vaultInteractor = GetIt.I<VaultInteractor>();
 
-  late final _networkSubscription =
-      _vaultInteractor.messageStream.listen(responseHandler);
+  late final _networkSubscription = _vaultInteractor.messageStream.listen(
+    responseHandler,
+  );
 
   Timer? _timer;
 
@@ -49,8 +50,10 @@ abstract base class VaultPresenterBase extends PagePresentererBase {
 
   void stopListenResponse({bool shouldNotify = true}) {
     _timer?.cancel();
-    _networkSubscription.cancel();
-    _vaultInteractor.wakelockDisable();
-    if (shouldNotify) notifyListeners();
+    unawaited(_networkSubscription.cancel());
+    unawaited(_vaultInteractor.wakelockDisable());
+    if (shouldNotify) {
+      notifyListeners();
+    }
   }
 }

@@ -27,29 +27,36 @@ class AddSecretPage extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(
-                      top: 32, left: kDefaultPadding, right: kDefaultPadding),
+                    top: 32,
+                    left: kDefaultPadding,
+                    right: kDefaultPadding,
+                  ),
                   child: TextFormField(
                     autofocus: true,
                     maxLines: null,
                     maxLength: kMaxSecretLength,
                     initialValue: presenter.secret,
-                    keyboardType: TextInputType.multiline,
-                    decoration:
-                        const InputDecoration(labelText: ' Your Secret '),
+                    keyboardType: .multiline,
+                    decoration: const InputDecoration(
+                      labelText: ' Your Secret ',
+                    ),
                     onTapOutside: (_) => FocusScope.of(context).unfocus(),
                     onChanged: presenter.setSecret,
                   ),
                 ),
+
                 // Footer
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                      vertical: 32, horizontal: kDefaultPadding),
+                    vertical: 32,
+                    horizontal: kDefaultPadding,
+                  ),
                   child: Selector<VaultSecretAddPresenter, String>(
                     selector: (_, p) => p.secret,
-                    builder: (_, secret, __) => FilledButton(
+                    builder: (_, secret, _) => FilledButton(
                       onPressed: secret.isEmpty
                           ? null
-                          : () {
+                          : () async {
                               if (presenter.isUnderstandingShardsHidden) {
                                 presenter.nextPage();
                               } else {
@@ -57,7 +64,9 @@ class AddSecretPage extends StatelessWidget {
                                   context,
                                   maxSize: presenter.vault.maxSize,
                                 ).then((r) {
-                                  if (r ?? false) presenter.nextPage();
+                                  if (r ?? false) {
+                                    return presenter.nextPage();
+                                  }
                                 });
                               }
                             },

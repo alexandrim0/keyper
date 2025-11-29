@@ -26,19 +26,15 @@ class VaultShowScreen extends StatelessWidget {
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.more_vert),
-            onPressed: () {
-              OnVaultMoreDialog.show(
-                context,
-                vaultId: vaultId,
-              );
-            },
+            onPressed: () async => OnVaultMoreDialog.show(
+              context,
+              vaultId: vaultId,
+            ),
           ),
         ],
       ),
@@ -50,7 +46,8 @@ class VaultShowScreen extends StatelessWidget {
         ),
         stream: vaultInteractor.watch(vaultId.asKey),
         builder: (context, snapshot) {
-          final vault = snapshot.data?.vault ??
+          final vault =
+              snapshot.data?.vault ??
               Vault(
                 ownerId: vaultInteractor.selfId,
               );
@@ -69,6 +66,7 @@ class VaultShowScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+
               // Secrets
               if (vault.hasSecrets)
                 const Padding(
@@ -78,23 +76,28 @@ class VaultShowScreen extends StatelessWidget {
               DecoratedBox(
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.all(
-                    Radius.circular(kCornerRadius),
+                    .circular(kCornerRadius),
                   ),
                   color: Theme.of(context).colorScheme.surface,
                 ),
                 child: Column(
                   children: [
                     for (final secretId in vault.secrets.keys)
-                      SecretListTile(vault: vault, secretId: secretId),
+                      SecretListTile(
+                        secretId: secretId,
+                        vault: vault,
+                      ),
                   ],
                 ),
               ),
+
               // Guardians
               if (vault.isRestricted)
                 PageTitleRestricted(vault: vault)
               else if (vault.isNotFull)
                 PageTitle(
-                  subtitle: 'Adding ${vault.maxSize} Guardians '
+                  subtitle:
+                      'Adding ${vault.maxSize} Guardians '
                       'will activate your Safe, making it '
                       'ready to securely hold your Secrets.',
                 )
@@ -111,7 +114,7 @@ class VaultShowScreen extends StatelessWidget {
                   DecoratedBox(
                     decoration: BoxDecoration(
                       borderRadius: const BorderRadius.all(
-                        Radius.circular(kCornerRadius),
+                        .circular(kCornerRadius),
                       ),
                       color: Theme.of(context).colorScheme.surface,
                     ),

@@ -8,9 +8,7 @@ import '../vault_secret_recovery_presenter.dart';
 
 class ShowSecretPage extends StatelessWidget {
   static const _mask = SvgPicture(
-    AssetBytesLoader(
-      'assets/images/secret_mask.svg.vec',
-    ),
+    AssetBytesLoader('assets/images/secret_mask.svg.vec'),
   );
 
   static const _snack = 'Secret is copied to your clipboard.';
@@ -27,9 +25,7 @@ class ShowSecretPage extends StatelessWidget {
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       child: Column(
@@ -40,16 +36,18 @@ class ShowSecretPage extends StatelessWidget {
               padding: paddingHDefault,
               children: [
                 const PageTitle(
-                  subtitle: 'Make sure your display is covered '
+                  subtitle:
+                      'Make sure your display is covered '
                       'before showing the Secret.',
                 ),
+
                 // Secret
                 Card(
                   child: Padding(
                     padding: paddingAllDefault,
                     child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisSize: .min,
+                      crossAxisAlignment: .stretch,
                       children: [
                         Container(
                           height: 160,
@@ -61,51 +59,54 @@ class ShowSecretPage extends StatelessWidget {
                                   style: theme.textTheme.bodySmall,
                                 ),
                         ),
-                        Row(children: [
-                          Expanded(
-                            child: presenter.isObfuscated
-                                ? FilledButton(
-                                    onPressed: () {
-                                      if (!presenter.tryShow()) {
-                                        OnAskAuthDialog.show(
-                                          context,
-                                          onUnlocked: presenter.onUnlockedShow,
-                                        );
-                                      }
-                                    },
-                                    child: const Text('Show'),
-                                  )
-                                : FilledButton(
-                                    onPressed: presenter.onPressedHide,
-                                    child: const Text('Hide'),
-                                  ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: FilledButton(
-                              onPressed: () async {
-                                final isOk = await presenter.tryCopy();
-                                if (context.mounted) {
-                                  if (isOk) {
-                                    showSnackBar(context, text: _snack);
-                                  } else {
-                                    await OnAskAuthDialog.show(
-                                      context,
-                                      onUnlocked: () async {
-                                        final isCopied =
-                                            await presenter.onUnlockedCopy();
-                                        if (isCopied && context.mounted) {
-                                          showSnackBar(context, text: _snack);
+                        Row(
+                          children: [
+                            Expanded(
+                              child: presenter.isObfuscated
+                                  ? FilledButton(
+                                      onPressed: () async {
+                                        if (!presenter.tryShow()) {
+                                          return OnAskAuthDialog.show(
+                                            context,
+                                            onUnlocked:
+                                                presenter.onUnlockedShow,
+                                          );
                                         }
                                       },
-                                    );
-                                  }
-                                }
-                              },
-                              child: const Text('Copy'),
+                                      child: const Text('Show'),
+                                    )
+                                  : FilledButton(
+                                      onPressed: presenter.onPressedHide,
+                                      child: const Text('Hide'),
+                                    ),
                             ),
-                          ),
-                        ]),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: FilledButton(
+                                onPressed: () async {
+                                  final isOk = await presenter.tryCopy();
+                                  if (context.mounted) {
+                                    if (isOk) {
+                                      showSnackBar(context, text: _snack);
+                                    } else {
+                                      await OnAskAuthDialog.show(
+                                        context,
+                                        onUnlocked: () async {
+                                          final isCopied = await presenter
+                                              .onUnlockedCopy();
+                                          if (isCopied && context.mounted) {
+                                            showSnackBar(context, text: _snack);
+                                          }
+                                        },
+                                      );
+                                    }
+                                  }
+                                },
+                                child: const Text('Copy'),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),

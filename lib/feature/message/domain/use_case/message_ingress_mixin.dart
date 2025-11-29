@@ -8,12 +8,14 @@ mixin class MessageIngressMixin {
   final _vaultRepository = GetIt.I<VaultRepository>();
   final _messageRepository = GetIt.I<MessageRepository>();
 
-  void onMessage(MessageModel message) {
+  Future<void> onMessage(MessageModel message) async {
     final ticket = _messageRepository.get(message.aKey);
-    if (kDebugMode) print('$message\n$ticket');
+    if (kDebugMode) {
+      print('$message\n$ticket');
+    }
 
     switch (message.code) {
-      case MessageCode.createVault:
+      case .createVault:
         if (message.payload == null) return;
         // qrCode was not generated
         if (ticket == null) return;
@@ -23,7 +25,7 @@ mixin class MessageIngressMixin {
         // vault already exists
         if (_vaultRepository.containsKey(message.vaultId.asKey)) return;
 
-      case MessageCode.takeVault:
+      case .takeVault:
         // qrCode was not generated
         if (ticket == null) return;
         // qrCode was processed already
@@ -33,7 +35,7 @@ mixin class MessageIngressMixin {
         // ignore: parameter_assignments
         message = message.copyWith(payload: ticket.payload);
 
-      case MessageCode.setShard:
+      case .setShard:
         if (message.payload == null) return;
         // request already processed
         if (ticket != null) return;
@@ -45,7 +47,7 @@ mixin class MessageIngressMixin {
         // already have this Secret
         if (vault.secrets.containsKey(message.secretShard.id)) return;
 
-      case MessageCode.getShard:
+      case .getShard:
         if (message.payload == null) return;
         // request already processed
         if (ticket != null) return;
@@ -57,7 +59,7 @@ mixin class MessageIngressMixin {
         // Have no such Secret
         if (!vault.secrets.containsKey(message.secretShard.id)) return;
     }
-    _messageRepository.put(
+    await _messageRepository.put(
       message.aKey,
       message.copyWith(status: MessageStatus.received),
     );

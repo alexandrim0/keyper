@@ -8,32 +8,32 @@ import 'package:guardian_keyper/ui/theme/brand_colors.dart';
 
 part 'theme_colors.dart';
 
-final textTheme = ThemeData().textTheme.copyWith(
-      headlineLarge: GoogleFonts.poppins(
-        fontSize: 32,
-        fontWeight: FontWeight.w600,
-      ),
-      headlineMedium: GoogleFonts.poppins(
-        fontSize: 30,
-        fontWeight: FontWeight.w500,
-      ),
-      headlineSmall: GoogleFonts.poppins(
-        fontSize: 28,
-        fontWeight: FontWeight.w400,
-      ),
-      titleLarge: GoogleFonts.poppins(
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-      ),
-      titleMedium: GoogleFonts.poppins(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-      ),
-      titleSmall: GoogleFonts.poppins(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-      ),
-    );
+final TextTheme textTheme = ThemeData().textTheme.copyWith(
+  headlineLarge: GoogleFonts.poppins(
+    fontSize: 32,
+    fontWeight: FontWeight.w600,
+  ),
+  headlineMedium: GoogleFonts.poppins(
+    fontSize: 30,
+    fontWeight: FontWeight.w500,
+  ),
+  headlineSmall: GoogleFonts.poppins(
+    fontSize: 28,
+    fontWeight: FontWeight.w400,
+  ),
+  titleLarge: GoogleFonts.poppins(
+    fontSize: 20,
+    fontWeight: FontWeight.w600,
+  ),
+  titleMedium: GoogleFonts.poppins(
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+  ),
+  titleSmall: GoogleFonts.poppins(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+  ),
+);
 
 final themeData = ThemeData(
   // AppBar
@@ -83,10 +83,12 @@ final themeData = ThemeData(
   // Filled Button
   filledButtonTheme: FilledButtonThemeData(
     style: ButtonStyle(
-      fixedSize: const WidgetStatePropertyAll(Size(
-        double.infinity,
-        kButtonSize,
-      )),
+      fixedSize: const WidgetStatePropertyAll(
+        Size(
+          double.infinity,
+          kButtonSize,
+        ),
+      ),
       textStyle: WidgetStatePropertyAll(textTheme.titleMedium),
     ),
   ),
@@ -124,17 +126,22 @@ final themeData = ThemeData(
 
   // Outlined Button
   outlinedButtonTheme: OutlinedButtonThemeData(
-      style: ButtonStyle(
-    fixedSize: const WidgetStatePropertyAll(Size(
-      double.infinity,
-      kButtonSize,
-    )),
-    textStyle: WidgetStatePropertyAll(textTheme.titleMedium),
-  )),
-  pageTransitionsTheme: const PageTransitionsTheme(builders: {
-    TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-    TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-  }),
+    style: ButtonStyle(
+      fixedSize: const WidgetStatePropertyAll(
+        Size(
+          double.infinity,
+          kButtonSize,
+        ),
+      ),
+      textStyle: WidgetStatePropertyAll(textTheme.titleMedium),
+    ),
+  ),
+  pageTransitionsTheme: const PageTransitionsTheme(
+    builders: {
+      TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+      TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+    },
+  ),
 
   // SnackBar
   snackBarTheme: const SnackBarThemeData(

@@ -27,19 +27,20 @@ class OnDemandAuthDialog {
           padding: AuthDialogMixin.getPadding(context),
           child: AuthDialogMixin.currentPassCodeTitle,
         ),
-        customizedButtonChild:
-            authBio == null ? null : const Icon(Icons.fingerprint, size: 48),
+        customizedButtonChild: authBio == null
+            ? null
+            : const Icon(Icons.fingerprint, size: 48),
         customizedButtonTap: authBio,
         onOpened: authBio,
         onUnlocked: Navigator.of(context).pop,
-        onError: (_) {
+        onError: (_) async {
           showSnackBar(
             context,
             text: 'Wrong passcode!',
             isFloating: true,
             isError: true,
           );
-          authManager.vibrate();
+          return authManager.vibrate();
         },
       );
     }
